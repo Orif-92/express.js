@@ -22,6 +22,32 @@ app.get('/books/:id', (req, res) => {
   }
 });
 
+//POST - /books:
+app.use(express.json());
+
+app.post('/books', (req, res) => {
+  const { title, author } = req.body;
+
+  if (!title || !author) {
+    res.status(400).json({ message: 'title va author kiritilishi shart' });
+    return;
+  }
+
+  const existingBook = books.find((item) => item.title === title);
+
+  if (existingBook) {
+    res.status(400).json({ message: 'Bu kitob allaqachon mavjud' });
+    return;
+  }
+
+  const id = books.length + 1;
+  const newBook = { id, title, author };
+  books.push(newBook);
+
+  res.status(201).json(newBook);
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server ${PORT}-portda ishga tushdi`);
 });

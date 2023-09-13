@@ -58,6 +58,44 @@ const addBookMiddleware = (req, res, next) => {
 
 app.post('/books', addBookMiddleware);
 
+//PUT - /books/:id:
+app.put('/books/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, author } = req.body;
+
+  const bookIndex = books.findIndex((item) => item.id === id);
+
+  if (bookIndex === -1) {
+    res.status(404).json({ message: 'Ma\'lumot topilmadi' });
+    return;
+  }
+
+  if (!title || !author) {
+    res.status(400).json({ message: 'title va author kiritilishi shart' });
+    return;
+  }
+
+  const existingBook = books.find((item) => item.title === title && item.id !== id);
+
+  if (existingBook) {
+    res.status(400).json({ message: 'Bu kitob allaqachon mavjud' });
+    return;
+  }
+
+  // O'zgartirilgan ma'lumotlarni yozish
+  books[bookIndex] = { id, title, author };
+
+  // Faylga yozish
+  fs.writeFile('books.json', JSON.stringify(books, null, 2), (err) => {
+    if (err) {
+      res.status(500).json({ message: 'Ma\'lumotlar yozilmadi' });
+    } else {
+      res.json(books[bookIndex]);
+    }
+  });
+});
+
+
 
 
 

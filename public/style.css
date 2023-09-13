@@ -1,0 +1,51 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #2986dd;
+}
+
+div {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+button {
+  margin: 5px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#search-id-container {
+  margin: 20px auto;
+  text-align: center;
+  border-radius: 5px;
+}
+
+#search-id-input {
+  padding: 5px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.button-yellow {
+  background-color: gold;
+  color: #333;
+}
+
+.button-red {
+  background-color: crimson;
+}

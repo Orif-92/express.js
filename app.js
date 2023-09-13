@@ -6,6 +6,8 @@ const PORT = 3000;
 // JSON ma'lumotlarni o'qib olish uchun middleware
 app.use(express.json()); 
 
+app.use(express.static('public'));
+
 //Ma'lumotlar katalogini yuklash:
 const books = require('./books.json');
 

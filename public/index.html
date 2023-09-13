@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Kitoblar Ro'yxati</title>
+</head>
+<body>
+  <div id="search-id-container">
+    <input type="number" id="search-id-input" placeholder="Kitob ID'sini kiriting">
+    <button onclick="searchById()">Izlash</button>
+  </div>
+    <h1>Kitoblar</h1>
+    
+    <div id="books-list"></div>
+
+    <div id="add-container">
+      <input type="text" id="add-title" placeholder="Kitob nomi">
+      <input type="text" id="add-author" placeholder="Muallif">
+      <button onclick="addBook()">Qo'shish</button>
+    </div>
+  
+
+    <script>
+const booksList = document.getElementById('books-list');
+
+function fetchBooks() {
+    fetch('/books')
+        .then(response => response.json())
+        .then(books => {
+            // Ma'lumotlarni o'chirib tashlash
+            while (booksList.firstChild) {
+                booksList.removeChild(booksList.firstChild);
+            }
+
+            books.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.innerHTML = `<p>${book.id}</p><h2>${book.title}</h2><p>${book.author}</p>
+                    <button class="button-yellow" onclick="editBook(${book.id})">Tahrirlash</button>
+                    <button class="button-red" onclick="deleteBook(${book.id})">O'chirish</button>`;
+                booksList.appendChild(bookElement);
+            });
+        })
+        .catch(error => console.error(error));
+}
+
+function editBook(id) {
+    const newTitle = prompt('Yangi kitob nomi:');
+    const newAuthor = prompt('Yangi muallif:');
+    
+    if (newTitle !== null && newAuthor !== null) {
+        fetch(`/books/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: newTitle, author: newAuthor })
+        })
+        .then(response => {
+            if (response.ok) {
+                fetchBooks(); // Ma'lumotlarni yangilash
+            } else {
+                console.error('Ma\'lumotlarni yangilash muvaffaqiyatsiz', response.status);
+            }
+        })
+        .catch(error => console.error(error));
+    }
+}
+
+function deleteBook(id) {
+    if (confirm('Kitobni o\'chirishni istaysizmi?')) {
+        fetch(`/books/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                fetchBooks(); // Ma'lumotlarni yangilash
+            } else {
+                console.error('Kitobni o\'chirish muvaffaqiyatsiz', response.status);
+            }
+        })
+        .catch(error => console.error(error));
+    }
+}
+
+      fetchBooks(); // Sahifani yuklash va ma'lumotlarni ko'rsatish
+    
+    // Kitob qo'shish funksiyasi
+    function addBook() {
+  const title = document.getElementById('add-title').value;
+  const author = document.getElementById('add-author').value;
+
+  if (!title || !author) {
+      alert('Iltimos, kitob nomi va muallifni kiriting.');
+      return;
+  }
+
+  fetch('/books', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title, author })
+  })
+  .then(response => {
+      if (response.ok) {
+          fetchBooks(); // Ma'lumotlarni yangilash
+      } else {
+          console.error('Kitobni qo\'shish muvaffaqiyatsiz', response.status);
+      }
+  })
+  .catch(error => console.error(error));
+
+  document.getElementById('add-title').value = '';
+  document.getElementById('add-author').value = '';
+}
+
+  // Kitobni ID bo'yicha qidirish funksiya
+function searchById() {
+    const searchInput = document.getElementById('search-id-input');
+    const bookId = parseInt(searchInput.value);
+
+    // Kitobni ID bo'yicha qidirish so'rovi serverga yuboriladi
+    fetch(`http://localhost:3000/books/${bookId}`)
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw new Error('Kitob topilmadi');
+            }
+        })
+        .then((foundBook) => {
+            alert(`${foundBook.id} ${foundBook.title} - ${foundBook.author}`);
+        })
+        .catch((error) => {
+            alert(error.message);
+        });
+}
+    </script>
+</body>
+</html>

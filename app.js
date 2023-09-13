@@ -1,6 +1,10 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
 const PORT = 3000; 
+
+// JSON ma'lumotlarni o'qib olish uchun middleware
+app.use(express.json()); 
 
 //Ma'lumotlar katalogini yuklash:
 const books = require('./books.json');
@@ -23,9 +27,7 @@ app.get('/books/:id', (req, res) => {
 });
 
 //POST - /books:
-app.use(express.json());
-
-app.post('/books', (req, res) => {
+const addBookMiddleware = (req, res, next) => {
   const { title, author } = req.body;
 
   if (!title || !author) {
@@ -44,8 +46,19 @@ app.post('/books', (req, res) => {
   const newBook = { id, title, author };
   books.push(newBook);
 
-  res.status(201).json(newBook);
-});
+  // Kitoblarni books.json fayliga yozish
+  fs.writeFile('books.json', JSON.stringify(books), (err) => {
+    if (err) {
+      res.status(500).json({ message: 'Ma\'lumotlar yozilmadi' });
+      return;
+    }
+    res.status(201).json(newBook);
+  });
+};
+
+app.post('/books', addBookMiddleware);
+
+
 
 
 app.listen(PORT, () => {

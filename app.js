@@ -95,7 +95,28 @@ app.put('/books/:id', (req, res) => {
   });
 });
 
+//DELETE - /books/:id:
+app.delete('/books/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const bookIndex = books.findIndex((item) => item.id === id);
 
+  if (bookIndex === -1) {
+    res.status(404).json({ message: 'Ma\'lumot topilmadi' });
+    return;
+  }
+
+  // Ma'lumotlarni o'chirish
+  books.splice(bookIndex, 1);
+
+  // Faylga yozish
+  fs.writeFile('books.json', JSON.stringify(books, null, 2), (err) => {
+    if (err) {
+      res.status(500).json({ message: 'Ma\'lumotlar o\'chirilmadi' });
+    } else {
+      res.status(204).end();
+    }
+  });
+});
 
 
 

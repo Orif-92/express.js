@@ -1,4 +1,5 @@
 {
+  "$schema": "./package-schema.json",
   "name": "express",
   "version": "1.0.0",
   "description": "",
